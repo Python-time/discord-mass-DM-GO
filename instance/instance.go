@@ -95,7 +95,7 @@ func (in *Instance) wsFatalHandler(err error) {
 	utilities.LogSuccess("Reconnected To Websocket %v", in.Token)
 }
 
-func GetEverything(inTokens ...string) (Config, []Instance, error) {
+func GetEverything(proxy string, inTokens ...string) (Config, []Instance, error) {
 	var cfg Config
 	var Instances []Instance
 	var err error
@@ -222,16 +222,19 @@ func GetEverything(inTokens ...string) (Config, []Instance, error) {
 		} else {
 			token = tokens[i]
 		}
-		var proxy, Gproxy, proxyProt string
-		if cfg.ProxySettings.ProxyFromFile {
-			proxy = proxies[rand.Intn(len(proxies))]
-			Gproxy = proxy
-			proxyProt = "http://" + proxy
-		} else {
-			proxy = ""
-			proxyProt = ""
-		}
-		fmt.Printf("\n-----ffff-----%d--\n\n", i)
+		//var proxy, Gproxy, proxyProt string
+		//if cfg.ProxySettings.ProxyFromFile {
+		//	proxy = proxies[rand.Intn(len(proxies))]
+		//	Gproxy = proxy
+		//	proxyProt = "http://" + proxy
+		//} else {
+		//	proxy = ""
+		//	proxyProt = ""
+		//}
+		Gproxy := proxy
+		proxyProt := "http://" + proxy
+
+		fmt.Printf("\n-----ffff-proxy:%s---Gproxy:%s---proxyPort:%s-\n\n", proxy, Gproxy, proxyProt)
 
 		index := rand.Intn(len(fingerprints))
 		httpclient, err := client.NewClient(client.Browser{JA3: fingerprints[index].JA3, UserAgent: fingerprints[index].Useragent, Cookies: nil}, cfg.ProxySettings.Timeout, false, fingerprints[index].Useragent, proxyProt)

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"github.com/V4NSH4J/discord-mass-dm-GO/instance"
 	"github.com/kataras/iris/v12"
-	"github.com/zenthangplus/goccm"
 	"os"
 	"time"
 
@@ -125,6 +124,7 @@ func InviteJoiner(ctx iris.Context) {
 	req := struct {
 		Token string `json:"token"`
 		Link  string `json:"link"`
+		Proxy string `json:"proxy"`
 	}{}
 
 	_ = ctx.ReadJSON(&req)
@@ -132,7 +132,7 @@ func InviteJoiner(ctx iris.Context) {
 		ctx.JSON(iris.Map{"msg": "参数不能为空"})
 		return
 	}
-	_, instances, err := instance.GetEverything(req.Token)
+	_, instances, err := instance.GetEverything(req.Proxy, req.Token)
 
 	if err != nil {
 		fmt.Printf("程序报错:%s\n\n", err.Error())
@@ -141,21 +141,10 @@ func InviteJoiner(ctx iris.Context) {
 	fmt.Printf("len----%d--- \n\n", len(instances))
 	link := discord.ProcessInvite(req.Link)
 
-	threads := len(instances)
-
-	c := goccm.New(threads)
-	for i := 0; i < len(instances); i++ {
-		c.Wait()
-		go func(i int) {
-			err := instances[i].Invite(link)
-			if err != nil {
-				fmt.Printf("程序出错---%s----\n\n", err.Error())
-			}
-			time.Sleep(time.Duration(1) * time.Second)
-			c.Done()
-		}(i)
+	err = instances[0].Invite(link)
+	if err != nil {
+		fmt.Printf("程序出错---%s----\n\n", err.Error())
 	}
-	c.WaitAllDone()
 
 	ctx.JSON(iris.Map{"token": req.Token, "link": req.Link})
 }
