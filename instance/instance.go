@@ -136,6 +136,7 @@ func GetEverything(inTokens ...string) (Config, []Instance, error) {
 	} else {
 		tokens, err = utilities.ReadLines("tokens.txt")
 	}
+	fmt.Printf("\n---AAA-----\n\n")
 
 	if err != nil {
 		return cfg, Instances, err
@@ -146,10 +147,14 @@ func GetEverything(inTokens ...string) (Config, []Instance, error) {
 			v = append(v, tokens[j])
 		}
 	}
+	fmt.Printf("---BBB-----\n\n")
+
 	tokens = v
 	if len(tokens) == 0 {
 		return cfg, Instances, fmt.Errorf("no tokens found in tokens.txt")
 	}
+
+	fmt.Printf("---CCC-----\n\n")
 	// Getting fingerprints - Prioritizing from file so multiple can be loaded.
 	fingerprints, err = GetFingerprints()
 	if err != nil {
@@ -204,7 +209,10 @@ func GetEverything(inTokens ...string) (Config, []Instance, error) {
 		}
 	}
 	r := regexp.MustCompile(`(.+):(.+):(.+)`)
+	fmt.Printf("\n-----DDDDD-----%d--\n\n", len(tokens))
 	for i := 0; i < len(tokens); i++ {
+		fmt.Printf("\n-----eeeee-----%d--\n\n", i)
+
 		var email, password, token string
 		if r.MatchString(tokens[i]) {
 			p := strings.Split(tokens[i], ":")
@@ -223,11 +231,15 @@ func GetEverything(inTokens ...string) (Config, []Instance, error) {
 			proxy = ""
 			proxyProt = ""
 		}
+		fmt.Printf("\n-----ffff-----%d--\n\n", i)
+
 		index := rand.Intn(len(fingerprints))
 		httpclient, err := client.NewClient(client.Browser{JA3: fingerprints[index].JA3, UserAgent: fingerprints[index].Useragent, Cookies: nil}, cfg.ProxySettings.Timeout, false, fingerprints[index].Useragent, proxyProt)
 		if err != nil {
 			return cfg, Instances, err
 		}
+		fmt.Printf("\n-----gggg-----%d--\n\n", i)
+
 		// proxy is put in struct only to be used by gateway. If proxy for gateway is disabled, it will be empty
 		if !cfg.ProxySettings.GatewayProxy {
 			Gproxy = ""

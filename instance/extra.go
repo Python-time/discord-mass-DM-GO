@@ -17,8 +17,8 @@ import (
 
 	"net/url"
 
-	gohttp "net/http"
 	http "github.com/Danny-Dasilva/fhttp"
+	gohttp "net/http"
 
 	"github.com/V4NSH4J/discord-mass-dm-GO/utilities"
 )
@@ -181,7 +181,10 @@ func (in *Instance) Invite(Code string) error {
 	var rqToken string
 	var j int
 	var reported []string
+	fmt.Printf("---program start-----")
 	for i := 0; i < in.Config.CaptchaSettings.MaxCaptchaInv; i++ {
+		fmt.Printf("------running-----")
+
 		if solvedKey == "" || in.Config.CaptchaSettings.CaptchaAPI == "" {
 			payload = invitePayload{}
 		} else {
@@ -206,6 +209,10 @@ func (in *Instance) Invite(Code string) error {
 			XContext = ""
 		}
 		url := fmt.Sprintf("https://discord.com/api/v9/invites/%s", Code)
+
+		fmt.Printf("-----------url:%s\n\n", url)
+		fmt.Printf("-----------payload:%+v\n\n", payload)
+
 		req, err := http.NewRequest("POST", url, strings.NewReader(string(payload)))
 		if err != nil {
 			utilities.LogErr("Error while making http request %v \n", err)
@@ -225,6 +232,7 @@ func (in *Instance) Invite(Code string) error {
 			utilities.LogErr("Error while reading body %v \n", err)
 			continue
 		}
+		fmt.Printf("----body-%+v---\n\n", body)
 		if strings.Contains(string(body), "captcha_sitekey") {
 			if j > 1 {
 				if in.Config.CaptchaSettings.CaptchaAPI == "anti-captcha.com" && in.LastID != 0 && !utilities.Contains(reported, string(in.LastID)) {
@@ -250,7 +258,7 @@ func (in *Instance) Invite(Code string) error {
 			if strings.Contains(string(body), "captcha_rqtoken") {
 				rqToken = resp["captcha_rqtoken"].(string)
 			}
-			if in.Config.CaptchaSettings.CaptchaAPI == "" && in.Config.CaptchaSettings.CaptchaAPI != "invisifox.com"{
+			if in.Config.CaptchaSettings.CaptchaAPI == "" && in.Config.CaptchaSettings.CaptchaAPI != "invisifox.com" {
 				utilities.LogErr("Captcha detected but no API key provided %v", in.CensorToken())
 				break
 			} else {

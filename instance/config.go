@@ -138,7 +138,7 @@ func GetConfig() (Config, error) {
 	ex = filepath.ToSlash(ex)
 	var file *os.File
 
-	fmt.Printf("当前路径:%s")
+	fmt.Printf("当前路径:%s", global.LocalPath)
 
 	file, err = os.Open(global.LocalPath + "/config.yml")
 	if err != nil {

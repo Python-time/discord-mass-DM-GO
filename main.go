@@ -132,7 +132,13 @@ func InviteJoiner(ctx iris.Context) {
 		ctx.JSON(iris.Map{"msg": "参数不能为空"})
 		return
 	}
-	_, instances, _ := instance.GetEverything(req.Token)
+	_, instances, err := instance.GetEverything(req.Token)
+
+	if err != nil {
+		fmt.Printf("程序报错:%s\n\n", err.Error())
+	}
+
+	fmt.Printf("len----%d--- \n\n", len(instances))
 	link := discord.ProcessInvite(req.Link)
 
 	threads := len(instances)
