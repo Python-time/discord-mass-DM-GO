@@ -128,11 +128,11 @@ func InviteJoiner(ctx iris.Context) {
 	}{}
 
 	_ = ctx.ReadJSON(&req)
-	if req.Token == "" || req.Link == "" {
+	if req.Token == "" || req.Link == "" || req.Proxy == "" {
 		ctx.JSON(iris.Map{"msg": "参数不能为空"})
 		return
 	}
-	_, instances, err := instance.GetEverything(req.Proxy, req.Token)
+	_, instances, err := instance.GetEverything(req.Token, req.Proxy)
 
 	if err != nil {
 		fmt.Printf("程序报错:%s\n\n", err.Error())

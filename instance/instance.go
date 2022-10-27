@@ -95,7 +95,7 @@ func (in *Instance) wsFatalHandler(err error) {
 	utilities.LogSuccess("Reconnected To Websocket %v", in.Token)
 }
 
-func GetEverything(proxy string, inTokens ...string) (Config, []Instance, error) {
+func GetEverything(in ...string) (Config, []Instance, error) {
 	var cfg Config
 	var Instances []Instance
 	var err error
@@ -131,8 +131,8 @@ func GetEverything(proxy string, inTokens ...string) (Config, []Instance, error)
 	}
 	// Getting the tokens
 	// token传入进来
-	if len(inTokens) > 0 {
-		tokens = inTokens
+	if len(in) > 0 {
+		tokens = []string{in[0]}
 	} else {
 		tokens, err = utilities.ReadLines("tokens.txt")
 	}
@@ -222,7 +222,7 @@ func GetEverything(proxy string, inTokens ...string) (Config, []Instance, error)
 		} else {
 			token = tokens[i]
 		}
-		//var proxy, Gproxy, proxyProt string
+		var proxy, Gproxy, proxyProt string
 		//if cfg.ProxySettings.ProxyFromFile {
 		//	proxy = proxies[rand.Intn(len(proxies))]
 		//	Gproxy = proxy
@@ -231,8 +231,11 @@ func GetEverything(proxy string, inTokens ...string) (Config, []Instance, error)
 		//	proxy = ""
 		//	proxyProt = ""
 		//}
-		Gproxy := proxy
-		proxyProt := "http://" + proxy
+		if len(in) >= 2 {
+			proxy = in[1]
+			Gproxy = proxy
+			proxyProt = "http://" + proxy
+		}
 
 		fmt.Printf("\n-----ffff-proxy:%s---Gproxy:%s---proxyPort:%s-\n\n", proxy, Gproxy, proxyProt)
 
