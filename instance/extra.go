@@ -10,6 +10,7 @@ import (
 	"bytes"
 	b64 "encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
@@ -168,10 +169,11 @@ func Bypass(client *http.Client, serverid string, token string, invite string) e
 
 	if resp.StatusCode == 201 || resp.StatusCode == 204 {
 		utilities.LogSuccess("[%v] Successfully bypassed token %v", time.Now().Format("15:04:05"), token)
+		return nil
 	} else {
 		utilities.LogErr("[%v] Failed to bypass Token %v %v %v", time.Now().Format("15:04:05"), token, resp.StatusCode, string(body))
+		return errors.New(string(body))
 	}
-	return nil
 }
 
 func (in *Instance) Invite(Code string) error {
@@ -287,12 +289,16 @@ func (in *Instance) Invite(Code string) error {
 			utilities.LogSuccess("%v joined guild %v", in.CensorToken(), Code)
 			if Join.VerificationForm {
 				if len(Join.GuildObj.ID) != 0 {
-					Bypass(in.Client, Join.GuildObj.ID, in.Token, Code)
+					err = Bypass(in.Client, Join.GuildObj.ID, in.Token, Code)
+					if err != nil {
+						return err
+					}
 				}
 			}
 		}
 		if resp.StatusCode != 200 {
 			utilities.LogErr("[%v] %v Failed to join guild %v", time.Now().Format("15:04:05"), resp.StatusCode, string(body))
+			return errors.New(string(body))
 		}
 		return nil
 

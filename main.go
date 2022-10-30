@@ -122,9 +122,11 @@ const logo = "\r\n\r\n\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2
 
 func InviteJoiner(ctx iris.Context) {
 	req := struct {
-		Token string `json:"token"`
-		Link  string `json:"link"`
-		Proxy string `json:"proxy"`
+		Token      string `json:"token"`
+		Link       string `json:"link"`
+		Proxy      string `json:"proxy"`
+		CaptchaKey string `json:"captcha_key"`
+		CaptchaApi string `json:"captcha_api"`
 	}{}
 
 	_ = ctx.ReadJSON(&req)
@@ -141,10 +143,15 @@ func InviteJoiner(ctx iris.Context) {
 	fmt.Printf("len----%d--- \n\n", len(instances))
 	link := discord.ProcessInvite(req.Link)
 
+	instances[0].Config.CaptchaSettings.CaptchaAPI = req.CaptchaApi
+	instances[0].Config.CaptchaSettings.ClientKey = req.CaptchaKey
+	instances[0].Config.CaptchaSettings.MaxCaptchaInv = 3
+
 	err = instances[0].Invite(link)
 	if err != nil {
-		fmt.Printf("程序出错---%s----\n\n", err.Error())
+		ctx.JSON(iris.Map{"code": 1, "msg": err.Error()})
+		return
 	}
 
-	ctx.JSON(iris.Map{"token": req.Token, "link": req.Link})
+	ctx.JSON(iris.Map{"code": 200, "msg": nil})
 }
